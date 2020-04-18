@@ -28,10 +28,10 @@ Add a new firewall rule.
 Once saved you should see the new rule added to the list.
 ![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/Deny_FW-Rule.png "Firewall list in USG for WAN-IN")
  
-Keep track of the rule number, because you will need it for the server configurations. In the example above the rule numbe is 4000
+Keep track of the rule number, because you will need it for the server configurations. In the example above the rule number is 4000
 
 ### IoT Outbound Setup (Optional)
-All of my IoT devices are on their own VLAN. I did this to be able to tack where my IoT devices send their data. In order to do this, I needed to setup an WLAN OUT rule to capture the newly created connections. Below is what it looks like
+All of my IoT devices are on their own VLAN. I did this to be able to track where my IoT devices send their data. In order to do this, I needed to setup an WLAN OUT rule to capture the newly created connections. Below is what it looks like
 
 
 ![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/IoT_OutBound_FW-Rule-Details.png "Details of firewall rule for IoT VLAN outboud traffic")
@@ -67,11 +67,11 @@ or if you don't want to be root (good choice) type
 
 ![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/USG_Remote_Syslog_IP.png "USG Remote IP Entry")
 
-5. Install an ELK instance. I followed the followin instructions and found it to be very easy
+5. Install an ELK instance. I followed the instructions from the link below and found it to be very easy. I only installed ElasticSearch and Kinana.
   
 https://logz.io/learn/complete-guide-elk-stack/#installing-elk
 
-In my case, I didn't have a set of machines that could run the entire ELK stack. I am using my USG for home use. So, I only installed the __Eleastic Search__ part and the __Kibana__ part. I did __NOT__ install LogStash. In reality, the python server is serving this function in a very basic and specif purpose, the USG log events.
+In my case, I didn't have a set of machines that could run the entire ELK stack. I am using my USG for home use. So, I only installed the __Elastic Search__ part and the __Kibana__ part. I did __NOT__ install LogStash. In reality, the python server is providing this function in a very basic and specif purpose, the USG log events.
 
 In future releases there will be external configuration file for the options.
 
