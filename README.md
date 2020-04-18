@@ -77,7 +77,11 @@ In my case, I didn't have a set of machines that could run the entire ELK stack.
 
 #### Configure Kibaba for Mapping of the Deny Rule
 Logon to Kibaba
-Go to Dev tools
+> http://IPofKibana:5601/
+ 
+Go to Dev tools via the link on the left side navigation
+![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/Kibana-main-screen.png "Kibana main screen")
+
 Paste snippet into the console. 
 ```JSON
 PUT _ingest/pipeline/geoip
@@ -92,9 +96,18 @@ PUT _ingest/pipeline/geoip
   ]
 }
 ```
-#### Configure Kibaba for Mapping of the IoT VLan Rule
+It should look something like this:
+![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/Dev-console-geoip-json.png "Kibana dev console")
 
-Paste snippet into the console. 
+Make sure you click the submit button on the upper right cover of the editor.
+![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/Dev-console-submit-button.png "Kibana dev console submit button")
+
+You should see something like the following after hitting the submit button.
+![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/Dev-console-submit-success.png "Kibana dev console submit success screen")
+
+#### Configure Kibaba for Mapping of the IoT VLan Rule
+Like with the Deny rule repeat the process of pasting the JSON into the dev console and click the submit button.
+
 ```JSON
 PUT _ingest/pipeline/destgeoip
 {
