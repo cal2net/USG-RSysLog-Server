@@ -124,6 +124,55 @@ PUT _ingest/pipeline/destgeoip
 
 At this point we should be able to process inbound message and properly code them with geo-code information.
 
+### Create the Index Patterns
+We need to create the index patterns for the documents that are being stored. At some point you should start to see documents related to the deny firewall rule getting stored. Below is how to set up the search index so you can quickly analyze the documents.
+
+Start by going to the __Management__ screen, by clicking management link on the left.
+![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/Kibana-main-screen.png "Kibana main screen")
+
+Once you your screen should look similar to the following.
+![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/Kibana-maint-screen.png "Kibana management screen")
+
+Click on __Index Patterns__ link on the left
+![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/management-sub-links.png "Kibana sub navigation management screen")
+
+We are now going to fill out the entry field with the begining of the index name with a the wildcard to get both document types, the ones for deny documents and the IoT documents. Type the following into the entry field.
+
+> unifi*
+
+![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/creat-index-step1.png "Kibana index pattern step1 screen")
+
+Click __Next__
+
+![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/create-index-step2.png "Kibana index pattern step1 screen")
+
+Click __Create Index Pattern__ and then __Save__
+
+Index Patterns should now be created. 
+
+### Discover your documents
+The last steps is to make sure the index pattern is working. We are now going to look at the documents that are being index in elastic. Click on the left navigation the __Discover__ link.
+
+![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/Discover-Main-screen.png "Kibana Discover main screen")
+
+There may or may not be any documents in the list. There should be, but just in case you have documents from some other logging process. We need to filter the documents based on the ones we care about the most. That being, the Deny log events and the IoT log events.
+
+Type the following in the KQL entry field at the top.
+
+> _index : "unifi-deny"   and bus_rule.keyword : "FW-DENY"   
+
+![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/Discover-KQL-Entry-Field.png "Kibana Discover main screen")
+
+Click the __Refresh__ button and your documents should start to show up.
+
+Lets double check your geo ip information is being added properly to your document. If you look at any of the line items of the documents in the list, you should see something like the following in the document information.
+
+
+![alt text](https://github.com/cal2net/USG-RSysLog-Server/blob/master/images/Discover-Document-lineitem.png "Kibana Discover search line item screen")
+
+Okay, at this point your documents are in ELK. There are ton of things you can do to get insight into your documents. You can find tons of example on the web for creating maps and tutorial on creating visualization in Kibana. 
+
+
 Enjoy
 
 
