@@ -71,11 +71,45 @@ or if you don't want to be root (good choice) type
   
 https://logz.io/learn/complete-guide-elk-stack/#installing-elk
 
-In my case, I didn't have a set of machines that could run the entire ELK stack. I am using my USG for home use. So, I only installed the __Elastic Search__ part and the __Kibana__ part. I did __NOT__ install LogStash. In reality, the python server is providing this function in a very basic and specif purpose, the USG log events.
+In my case, I didn't have a set of machines that could run the entire ELK stack. I am using my USG for home use. So, I only installed the __Elastic Search__ part and the __Kibana__ part. I did __NOT__ install LogStash or Beats. In reality, the python server is providing this function in a very basic and specif purpose, the USG log events.
 
-In future releases there will be external configuration file for the options.
+6. Now it is time to configure the ELK stack to deal with geo-location information derived from the IP address. This is what allows the maps to be generated in Kibana. I assume this is what most people want out of the dashboard. It is pretty straight forward. Below are the two things needed. One is for the Deny Rules and the other is for the IoT information. If you are not doing the IoT VLan monitoring, you don't have to do the second update.
 
-I will create a screen shot approach to setting up the overall solution.
+#### Configure Kibaba for Mapping of the Deny Rule
+Logon to Kibaba
+Go to Dev tools
+Paste snippet into the console. 
+```JSON
+PUT _ingest/pipeline/geoip
+{
+  "description" : "Add geoip info",
+  "processors" : [
+    {
+      "geoip" : {
+        "field" : "SRC"
+      }
+    }
+  ]
+}
+```
+#### Configure Kibaba for Mapping of the IoT VLan Rule
+
+Paste snippet into the console. 
+```JSON
+PUT _ingest/pipeline/destgeoip
+{
+  "description" : "Add geoip info for IoT",
+  "processors" : [
+    {
+      "geoip" : {
+        "field" : "DST"
+      }
+    }
+  ]
+}
+```
+
+At this point we should be able to process inbound message and properly code them with geo-code information.
 
 Enjoy
 
