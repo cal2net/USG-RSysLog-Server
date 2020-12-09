@@ -10,7 +10,7 @@ HOST, PORT = "0.0.0.0", 514
 ## Seems my lessage types for Kernel Message are
 KERNEL_ID = '<4>'
 
-## Deny information. These are for messages that the USG blocks at the firewall  
+## Deny information. These are for messages that the USG blocks at the firewall
 DENY_INDEX = 'unifi-deny'
 DENY_KEY = 'WAN_LOCAL-4000-D'
 DENY_RULE= 'FW-DENY'
@@ -25,6 +25,11 @@ IOT_PIPELINE = 'destgeoip'
 ## ELK base url and port
 ELK_URL = 'http://localhost:9200/'
 
+GEOIP_LOOKUP = True
+GEOIP_LOOKUP_URL = 'http://localhost:5000/'
+
+IOT_Client_LOOKUP = True
+IoTClient_LOOKUP_URL = 'http://localhost:5002/'
 
 import logging
 import socketserver
@@ -57,13 +62,13 @@ class USGRSyslogUDPHandler(socketserver.BaseRequestHandler):
 			logging.info(data)
 			return
 		if str(data).startswith(KERNEL_ID):
-			parseKernelMessageg(str(data))		
+			parseKernelMessageg(str(data))
 		else:
 			if screenlog or logUnknownMsg:
 				print( "No winner" )
 				print(str(data))
 				print( "End of no Winner")
-			
+
 def parseKernelMessageg(line):
 	if DENY_KEY in line:
 		return parseKernelDenyMessage(line)
@@ -106,7 +111,7 @@ def parseKernelMessage(line,key,rule,index,pipeline):
 		print(msglist)
 	output = {}
 	uid = str(uuid.uuid4())
-	
+
 	now = datetime.utcnow()
 	output['@timestamp']=now.strftime("%Y-%m-%dT%H:%M:%S.%f")
 
@@ -115,9 +120,15 @@ def parseKernelMessage(line,key,rule,index,pipeline):
 			continue
 		if "=" not in key_value:
 			continue
+		if "SRC" in key_value and GEOIP_LOOKUP and rule is DENY_RULE:
+			output['geoip'] = checkGeoIP(key_value)
+		if "DST" in key_value and GEOIP_LOOKUP and rule is IOT_RULE:
+			output['geoip'] = checkGeoIP(key_value)
+		if "SRC" in key_value and IOT_Client_LOOKUP and rule is IOT_RULE:
+			output['iot_hostname'] = checkIoTDeviceIP(key_value)
 
 		key, value = key_value.split('=')
-		output['_id'] = uid
+		#output['_id'] = uid
 		output[key]=value
 
 	output['bus_rule'] = rule
@@ -125,24 +136,54 @@ def parseKernelMessage(line,key,rule,index,pipeline):
 	if screenlog:
 		print(resp_json)
 
-	url = genURL(index,uid,pipeline)	
-	sendHttp(resp_json,url)	
+	url = genURL(index,uid,pipeline)
+	sendHttp(resp_json,url)
+
+def checkGeoIP(key_value):
+	key, value = key_value.split('=')
+	if screenlog:
+		print("IP Address is " +value)
+	url = GEOIP_LOOKUP_URL+"cityByIP?ipaddr=" + value
+	r = getHttp(url)
+	return r
+
+def checkIoTDeviceIP(key_value):
+	key, value = key_value.split('=')
+	if screenlog:
+		print("IP Address is " +value)
+	url = IoTClient_LOOKUP_URL+"client?ip=" + value
+	r = getHttp(url)
+	if "hostname" in r:
+		return r["hostname"]
+	else:
+		return 'n/a'
 
 def genURL(INDEX, uuid,pipeline):
-	url = ELK_URL + INDEX + "/_doc/" + uuid +"?pipeline=" + pipeline
+	url = ELK_URL + INDEX + "/_doc/" + uuid #+"?pipeline=" + pipeline
 	if screenlog:
 		print("URL Generated")
 		print(url)
 	return url
 
+def getHttp(url):
+	print(url)
+	headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+	r = requests.get(url, headers=headers)
+	if screenlog:
+		print("Http Response")
+		print(r.json())
+	return r.json()
+
 
 def sendHttp(data, url):
 	print(url)
 	headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-	r = requests.post(url, data, headers=headers)
+	r = requests.put(url, data, headers=headers)
 	if screenlog:
+		print("data sent")
+		print(data)
 		print("Http Response")
-		print(r)
+		print(r.json())
 
 
 
@@ -154,5 +195,3 @@ if __name__ == "__main__":
 		raise
 	except KeyboardInterrupt:
 		print ("Crtl+C Pressed. Shutting down USG rSyslog Server.")
-
-
