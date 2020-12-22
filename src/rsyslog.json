@@ -1,0 +1,83 @@
+{
+
+
+  "HOST": "0.0.0.0",
+  "PORT" :514,
+
+  "LOG_UNKNOWN_MSG": false,
+
+  "KERNEL_ID" : "<4>",
+
+  "DENY_INDEX" : "unifi-deny",
+  "DENY_KEY" : "WAN_LOCAL-4000-D",
+  "DENY_RULE" : "FW-DENY",
+  "DENY_PIPELINE" : "geoip",
+
+  "IOT_INDEX" : "unifi-iot",
+  "IOT_KEY": "WAN_OUT-4000-A",
+  "IOT_RULE" : "IoT",
+  "IOT_PIPELINE" : "destgeoip",
+
+
+  "ELK_URL" : "http://192.168.1.39:9200/",
+
+  "GEOIP_LOOKUP" : true,
+  "GEOIP_LOOKUP_URL" : "http://192.168.1.117:5000/",
+
+  "IOT_Client_LOOKUP" : true,
+  "IoTClient_LOOKUP_URL" : "http://192.168.1.39:5002/",
+
+  "JUST_LOGGING" : false,
+
+  "screenlog" : false,
+
+  "LOG_UNKNOWN_MSG" : false,
+
+  "file_log" : true,
+
+
+  "logging_config":{
+        "disable_existing_loggers":"False",
+        "version": 1,
+        "formatters":{
+            "short": {
+                "format":"%(asctime)s %(levelname)s %(name)s: %(message)s"
+            }
+        },
+        "handlers": {
+            "console": {
+                "level": "INFO",
+                "formatter": "short",
+                "class": "logging.StreamHandler"
+            },
+          "file":{
+              "class" : "logging.handlers.RotatingFileHandler",
+              "formatter": "short",
+              "filename": "/tmp/syslog/USGRSyslog.log",
+              "maxBytes": 1024000,
+              "backupCount": 3
+            }
+        },
+        "loggers": {
+            "": {
+                "handlers": ["file"],
+                "level": "INFO"
+            },
+            "USGRSyslogUDPHandler": {
+                "handlers": ["console"],
+                "level": "INFO"
+            },
+            "main": {
+                "handlers": ["console"],
+                "level": "INFO"
+            },
+            "Handle-Loop": {
+                "handlers": ["console"],
+                "level": "INFO"
+            }
+        }
+    }
+
+
+
+}
