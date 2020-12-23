@@ -44,7 +44,7 @@ def copyfiles(location):
             os.mkdir(logdir)
 
         shutil.copyfile(cwd +"/src/USGRSysLogServer.py", bindir+"/USGRSysLogServer.py")
-\        shutil.copyfile(cwd +"/src/rsyslog.json", bindir+"/rsyslog.json")
+        shutil.copyfile(cwd +"/src/rsyslog.json", bindir+"/rsyslog.json")
 
         shutil.copyfile(cwd +"/requirements.txt", location+"/requirements.txt")
         shutil.copyfile(cwd +"/usg-rsyslog.sh", location+"/usg-rsyslog.sh")
