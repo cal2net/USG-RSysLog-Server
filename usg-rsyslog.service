@@ -1,0 +1,18 @@
+[Unit]
+Description=USG Remote Syslog service
+After=network.target
+StartLimitIntervalSec=0
+
+
+[Service]
+Environment=FLASK_ENV=development="production"
+
+Type=simple
+Restart=always
+User=pi
+WorkingDirectory=<install will take care of this>
+
+ExecStart=<install will take care of this>
+
+[Install]
+WantedBy=multi-user.target
